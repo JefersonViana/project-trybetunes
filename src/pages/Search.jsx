@@ -2,6 +2,9 @@ import React from 'react';
 import Header from '../components/Header';
 import { getUser } from '../services/userAPI';
 import Carregando from './Carregando';
+import searchAlbumsAPI from '../services/searchAlbumsAPI';
+import Form from '../components/Form';
+import Card from '../components/Card';
 
 class Search extends React.Component {
   constructor() {
@@ -12,6 +15,9 @@ class Search extends React.Component {
       isTrue: false,
       inputValue: '',
       isButtonTrue: true,
+      form: true,
+      artistName: '',
+      array: [],
     };
   }
 
@@ -43,32 +49,43 @@ class Search extends React.Component {
     }
   };
 
+  fetchMusic = async (artist) => {
+    const response = await searchAlbumsAPI(artist);
+    this.setState({
+      form: true,
+      artistName: artist,
+      array: response,
+    });
+  };
+
+  handleClick = () => {
+    const { inputValue } = this.state;
+    this.setState({
+      inputValue: '',
+      form: false,
+    });
+    this.fetchMusic(inputValue);
+  };
+
   render() {
-    const { name, isTrue, inputValue, isButtonTrue } = this.state;
+    const {
+      name,
+      isTrue,
+      inputValue, isButtonTrue, form, artistName, array } = this.state;
     const welcome = <h1 data-testid="header-user-name">{ `Welcome, ${name}` }</h1>;
+    const objectForm = {
+      func1: this.handleChange,
+      func2: this.handleClick,
+      inputValue,
+      isButtonTrue,
+    };
     return (
       <div data-testid="page-search">
         <Header />
         { isTrue ? welcome : <Carregando />}
-        <form>
-          <div>
-            <label>
-              <input
-                data-testid="search-artist-input"
-                onChange={ this.handleChange }
-                value={ inputValue }
-                placeholder="Digite a banda ou artista"
-              />
-            </label>
-          </div>
-          <button
-            data-testid="search-artist-button"
-            disabled={ isButtonTrue }
-            onClick={ this.handleClick }
-          >
-            Pesquisar
-          </button>
-        </form>
+        { form ? <Form object={ objectForm } /> : <Carregando /> }
+        { artistName && <p>{ `Resultado de álbuns de: ${artistName}` }</p> }
+        { artistName && <Card array={ array } /> }
       </div>
     );
   }
