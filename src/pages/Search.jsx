@@ -32,6 +32,14 @@ class Search extends React.Component {
       <div data-testid="page-search">
         <Header />
         { isTrue ? welcome : <Carregando />}
+        {/* <form>
+          <div>
+            <label>
+              <input />
+            </label>
+          </div>
+          <button>Search</button>
+        </form> */}
       </div>
     );
   }

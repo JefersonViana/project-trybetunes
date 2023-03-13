@@ -33,7 +33,7 @@ class Login extends React.Component {
   handleClick = (nome) => {
     const name = nome.target.previousElementSibling.firstChild.firstChild.value;
     const object = { name };
-    const y = 2000;
+    const y = 1000;
     this.setState({
       x: true,
     });
