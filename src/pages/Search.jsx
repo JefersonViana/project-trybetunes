@@ -10,14 +10,16 @@ class Search extends React.Component {
     this.state = {
       name: '',
       isTrue: false,
+      inputValue: '',
+      isButtonTrue: true,
     };
   }
 
   componentDidMount() {
-    this.teste();
+    this.fetchUser();
   }
 
-  teste = async () => {
+  fetchUser = async () => {
     const response = await getUser();
     this.setState({
       name: response.name,
@@ -25,21 +27,48 @@ class Search extends React.Component {
     });
   };
 
+  handleChange = ({ target }) => {
+    const fix = 2;
+    this.setState({
+      inputValue: target.value,
+    });
+    if (target.value.length >= fix) {
+      this.setState({
+        isButtonTrue: false,
+      });
+    } else {
+      this.setState({
+        isButtonTrue: true,
+      });
+    }
+  };
+
   render() {
-    const { name, isTrue } = this.state;
+    const { name, isTrue, inputValue, isButtonTrue } = this.state;
     const welcome = <h1 data-testid="header-user-name">{ `Welcome, ${name}` }</h1>;
     return (
       <div data-testid="page-search">
         <Header />
         { isTrue ? welcome : <Carregando />}
-        {/* <form>
+        <form>
           <div>
             <label>
-              <input />
+              <input
+                data-testid="search-artist-input"
+                onChange={ this.handleChange }
+                value={ inputValue }
+                placeholder="Digite a banda ou artista"
+              />
             </label>
           </div>
-          <button>Search</button>
-        </form> */}
+          <button
+            data-testid="search-artist-button"
+            disabled={ isButtonTrue }
+            onClick={ this.handleClick }
+          >
+            Pesquisar
+          </button>
+        </form>
       </div>
     );
   }
