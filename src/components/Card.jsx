@@ -6,7 +6,6 @@ class Card extends React.Component {
   render() {
     const fix = 0;
     const { array } = this.props;
-    console.log(array);
     if (array.length === fix) {
       return (
         <div>
