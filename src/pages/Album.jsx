@@ -28,6 +28,9 @@ class Album extends React.Component {
     const { params } = match;
     const response = await getMusics(params.id);
     if (storage.length === fix) {
+      response.forEach((music) => {
+        music.isCheck = false;
+      });
       this.setState({
         isTrue: false,
         array: response.slice(1, response.length),
@@ -37,6 +40,9 @@ class Album extends React.Component {
       const slice = response.slice(1, response.length);
       const newArray = slice.filter((obj) => !storage
         .some((element) => obj.trackName === element.trackName));
+      newArray.forEach((music) => {
+        music.isCheck = false;
+      });
       storage.forEach((music) => {
         music.isCheck = true;
       });

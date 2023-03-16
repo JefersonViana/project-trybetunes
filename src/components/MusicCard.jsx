@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
 import Carregando from '../pages/Carregando';
 
 class MusicCard extends React.Component {
@@ -28,25 +28,19 @@ class MusicCard extends React.Component {
     }
   };
 
-  addFavorite = async () => {
+  handleChecked = async ({ target }, music) => {
     this.setState({
       isTrue: false,
+      isChecked: target.checked,
     });
-    const { isChecked } = this.state;
-    const { music } = this.props;
-    if (isChecked) {
+    if (target.checked) {
       await addSong(music);
+    } else {
+      await removeSong(music);
     }
     this.setState({
       isTrue: true,
-    });
-  };
-
-  handleChecked = ({ target }) => {
-    this.setState({
       isChecked: target.checked,
-    }, () => {
-      this.addFavorite();
     });
   };
 
@@ -66,7 +60,7 @@ class MusicCard extends React.Component {
               <input
                 type="checkbox"
                 checked={ music.isCheck ? true : isChecked }
-                onChange={ this.handleChecked }
+                onChange={ (event) => this.handleChecked(event, music) }
               />
             </label>
           </li>
