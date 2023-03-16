@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import Carregando from './Carregando';
 import getMusics from '../services/musicsAPI';
 import MusicCard from '../components/MusicCard';
-import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
+import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 
 class Album extends React.Component {
   constructor() {
@@ -14,7 +14,6 @@ class Album extends React.Component {
       isTrue: true,
       array: [],
       prevArray: [],
-      validation: false,
     };
   }
 
@@ -22,45 +21,35 @@ class Album extends React.Component {
     this.fetchMusic();
   }
 
-  handleChecked = async ({ target }, music) => {
-    const response = await addSong(music);
-    console.log(response);
-    this.setState({
-      validation: target.checked,
-    });
-  };
-
   fetchMusic = async () => {
-    const getStorage = await getFavoriteSongs();
+    const storage = await getFavoriteSongs();
     const fix = 0;
     const { match } = this.props;
     const { params } = match;
     const response = await getMusics(params.id);
-    if (getStorage.length === fix) {
-      const newArray = response.filter((_element, index) => index >= 1);
+    if (storage.length === fix) {
       this.setState({
-        array: newArray,
         isTrue: false,
+        array: response.slice(1, response.length),
         prevArray: response,
       });
     } else {
-      getStorage.forEach((object) => {
-        object.isTrue = true;
+      const slice = response.slice(1, response.length);
+      const newArray = slice.filter((obj) => !storage
+        .some((element) => obj.trackName === element.trackName));
+      storage.forEach((music) => {
+        music.isCheck = true;
       });
-      const newArray1 = response.filter((music) => !getStorage
-        .some((obj) => obj.trackId === music.trackId));
-      const newArray2 = newArray1.filter((_element, index) => index >= 1);
       this.setState({
-        array: [...getStorage, ...newArray2],
         isTrue: false,
+        array: [...storage, ...newArray],
         prevArray: response,
       });
     }
   };
 
   render() {
-    const { isTrue, array, prevArray, validation } = this.state;
-    console.log(array);
+    const { isTrue, array, prevArray } = this.state;
     return (
       <div data-testid="page-album">
         <Header />
@@ -75,8 +64,6 @@ class Album extends React.Component {
                   <p>{ object.trackName }</p>
                   <MusicCard
                     music={ object }
-                    callback={ this.handleChecked }
-                    isChecked={ validation }
                   />
                 </div>
               ))}

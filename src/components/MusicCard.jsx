@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-// import { addSong } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 import Carregando from '../pages/Carregando';
 
 class MusicCard extends React.Component {
@@ -9,12 +9,50 @@ class MusicCard extends React.Component {
 
     this.state = {
       isTrue: true,
+      isChecked: false,
     };
   }
 
+  componentDidMount() {
+    this.storage();
+  }
+
+  storage = async () => {
+    const { music } = this.props;
+    const getStorage = await getFavoriteSongs();
+    const teste = getStorage.some((obj) => obj.trackName === music.trackName);
+    if (teste) {
+      this.setState({
+        isChecked: true,
+      });
+    }
+  };
+
+  addFavorite = async () => {
+    this.setState({
+      isTrue: false,
+    });
+    const { isChecked } = this.state;
+    const { music } = this.props;
+    if (isChecked) {
+      await addSong(music);
+    }
+    this.setState({
+      isTrue: true,
+    });
+  };
+
+  handleChecked = ({ target }) => {
+    this.setState({
+      isChecked: target.checked,
+    }, () => {
+      this.addFavorite();
+    });
+  };
+
   render() {
-    const { music, callback, isChecked } = this.props;
-    const { isTrue } = this.state;
+    const { music } = this.props;
+    const { isTrue, isChecked } = this.state;
     return (
       <div>
         {isTrue && (
@@ -27,8 +65,8 @@ class MusicCard extends React.Component {
               Favorita
               <input
                 type="checkbox"
-                defaultChecked={ music.isTrue ? true : isChecked }
-                onClick={ (event) => callback(event, music) }
+                checked={ music.isCheck ? true : isChecked }
+                onChange={ this.handleChecked }
               />
             </label>
           </li>
@@ -39,20 +77,13 @@ class MusicCard extends React.Component {
   }
 }
 
-MusicCard.defaultProps = {
-  music: {
-    isTrue: false,
-  },
-};
-
 MusicCard.propTypes = {
   music: PropTypes.shape({
+    isCheck: PropTypes.bool.isRequired,
     previewUrl: PropTypes.string.isRequired,
     trackId: PropTypes.number.isRequired,
-    isTrue: PropTypes.bool,
-  }),
-  callback: PropTypes.func.isRequired,
-  isChecked: PropTypes.bool.isRequired,
+    trackName: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default MusicCard;
