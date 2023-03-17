@@ -48,7 +48,7 @@ class Profile extends React.Component {
                 src={ user.image }
                 alt="foto perfil"
               />
-              <Link to="/profile/edit" data-testid="link-to-search">Editar perfil</Link>
+              <Link to="/profile/edit">Editar perfil</Link>
             </div>
             <div>
               <h3>Nome</h3>
