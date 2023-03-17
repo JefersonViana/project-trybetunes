@@ -37,6 +37,7 @@ class MusicCard extends React.Component {
       await addSong(music);
     } else {
       await removeSong(music);
+      music.isCheck = false;
     }
     this.setState({
       isTrue: true,
